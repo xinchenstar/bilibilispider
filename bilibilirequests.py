@@ -6,6 +6,9 @@ import os
 import urllib.request,urllib.error
 import pprint
 import copy
+from tkinter import *
+from PIL import Image, ImageTk
+
 headers = {
 			'Referer': 'https://www.bilibili.com/?spm_id_from=333.999.0.0',
 			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36',
@@ -43,7 +46,7 @@ params={
 params['mid']=1340190821
 
 response_1=requests.get(url=link,params=params,headers=headers)
-#print(response_1.json())
+print(response_1.json())
 data=response_1.json()['data']['list']['vlist']
 print(type(data))
 #pprint.pprint(data)
@@ -53,9 +56,10 @@ allvideo=[]
 print(response_1.json()['data']['list']['tlist']['4']['count'])
 
 
-for n in range(100):
+for n in range(1,100):
     if response_1.json()['data']['list']['tlist']['4']['count']<30:
         for i in range(0,response_1.json()['data']['list']['tlist']['4']['count']):
+            video['num']=30*(n-1)+i
             video['bvid']=data[i]['bvid']
             video['play']=data[i]['play']
             video['length']=data[i]['length']
@@ -68,6 +72,7 @@ for n in range(100):
         break
     else:
         for i in range(0,30):
+            video['num']=30*(n-1)+i
             video['bvid']=data[i]['bvid']
             video['play']=data[i]['play']
             video['length']=data[i]['length']
@@ -79,9 +84,40 @@ for n in range(100):
         params['pn']=params['pn']+1
         response_1=requests.get(url=link,params=params,headers=headers)
         data=response_1.json()['data']['list']['vlist']
-pprint.pprint(allvideo)
+#pprint.pprint(allvideo)
+
+def imgdownload(num,href):
+    # 二级页面请求 下载图片
+    html = requests.get(url=href, headers=headers).content
+    # 创建一个保存图片的路径
+    file = 'E:\Spider\img\\'
+    # 完整保存图片的链接
+    filename = file + str(num) + '.jpg'
+    # 判断有没有这个保存图片的路径  没有则创建
+    if not os.path.exists(file):
+        os.mkdir(file)
+    # 进行图片保存
+    with open(filename, 'wb') as f:
+        f.write(html)
+        # 打印一下图片的信息
+        print(filename)
+imgdownload(2,'http://i0.hdslb.com/bfs/archive/2c75d6505fe88b31b10a3edb0da6d97805b03e58.jpg')
 
 
+root = Tk()
+root.title("bilibili视频数据")
+root.geometry("500x500")
+root.config(bg="blue")
+img=Image.open("E:/Spider/img/2.jpg")
+image = ImageTk.PhotoImage(img.resize((int(img.width/5),int(img.height/5))))
+
+
+Label(root, image=image,compound="top").pack()
+listb  = Listbox(root)
+for item in allvideo:                 # 第一个小部件插入数据
+    listb.insert(0,item)
+listb.pack() 
+root.mainloop()
 
 
 
