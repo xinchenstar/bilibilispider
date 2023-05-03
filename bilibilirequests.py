@@ -59,7 +59,7 @@ print(response_1.json()['data']['list']['tlist']['4']['count'])
 for n in range(1,100):
     if response_1.json()['data']['list']['tlist']['4']['count']<30:
         for i in range(0,response_1.json()['data']['list']['tlist']['4']['count']):
-            video['num']=30*(n-1)+i
+            video['num']=30*(n-1)+i+1
             video['bvid']=data[i]['bvid']
             video['play']=data[i]['play']
             video['length']=data[i]['length']
@@ -72,7 +72,7 @@ for n in range(1,100):
         break
     else:
         for i in range(0,30):
-            video['num']=30*(n-1)+i
+            video['num']=30*(n-1)+i+1
             video['bvid']=data[i]['bvid']
             video['play']=data[i]['play']
             video['length']=data[i]['length']
