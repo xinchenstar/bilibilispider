@@ -1,13 +1,12 @@
 from bs4 import BeautifulSoup
 import requests
-import time
-import re
 import os
 import urllib.request,urllib.error
 import pprint
 import copy
 from tkinter import *
 from PIL import Image, ImageTk
+
 
 headers = {
 			'Referer': 'https://www.bilibili.com/?spm_id_from=333.999.0.0',
@@ -26,8 +25,6 @@ headers = {
             'sec-fetch-site': 'same-site',
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.64',
         }
-   
-tasks=[]
 link='https://api.bilibili.com/x/space/wbi/arc/search'
 global params
 params={
@@ -43,50 +40,8 @@ params={
     'w_rid': '3c81e6c1043493919f573429f7897345',
     'wts': 1683028490,
     }
-params['mid']=1340190821
 
-response_1=requests.get(url=link,params=params,headers=headers)
-print(response_1.json())
-data=response_1.json()['data']['list']['vlist']
-print(type(data))
-#pprint.pprint(data)
-print(data[1]['bvid'])
-video={}
-allvideo=[]
-print(response_1.json()['data']['list']['tlist']['4']['count'])
-
-
-for n in range(1,100):
-    if response_1.json()['data']['list']['tlist']['4']['count']<30:
-        for i in range(0,response_1.json()['data']['list']['tlist']['4']['count']):
-            video['num']=30*(n-1)+i+1
-            video['bvid']=data[i]['bvid']
-            video['play']=data[i]['play']
-            video['length']=data[i]['length']
-            video['comment']=data[i]['comment']
-            video['pic']=data[i]['pic']
-            video['title']=data[i]['title']
-            allvideo.append(video)
-            allvideo=copy.deepcopy(allvideo)
-            video.clear()
-        break
-    else:
-        for i in range(0,30):
-            video['num']=30*(n-1)+i+1
-            video['bvid']=data[i]['bvid']
-            video['play']=data[i]['play']
-            video['length']=data[i]['length']
-            video['comment']=data[i]['comment']
-            video['pic']=data[i]['pic']
-            video['title']=data[i]['title']
-            allvideo.append(video)
-            video.clear()
-        params['pn']=params['pn']+1
-        response_1=requests.get(url=link,params=params,headers=headers)
-        data=response_1.json()['data']['list']['vlist']
-#pprint.pprint(allvideo)
-
-def imgdownload(num,href):
+def download(num,href):
     # 二级页面请求 下载图片
     html = requests.get(url=href, headers=headers).content
     # 创建一个保存图片的路径
@@ -100,27 +55,56 @@ def imgdownload(num,href):
     with open(filename, 'wb') as f:
         f.write(html)
         # 打印一下图片的信息
-        print(filename)
-imgdownload(2,'http://i0.hdslb.com/bfs/archive/2c75d6505fe88b31b10a3edb0da6d97805b03e58.jpg')
+        #print(filename)
 
+def imgdownload(allvideo,count):
+    for i in range (0,count):
+        download(i,allvideo[i]['pic'])
 
-root = Tk()
-root.title("bilibili视频数据")
-root.geometry("500x500")
-root.config(bg="blue")
-img=Image.open("E:/Spider/img/2.jpg")
-image = ImageTk.PhotoImage(img.resize((int(img.width/5),int(img.height/5))))
-
-
-Label(root, image=image,compound="top").pack()
-listb  = Listbox(root)
-for item in allvideo:                 # 第一个小部件插入数据
-    listb.insert(0,item)
-listb.pack() 
-root.mainloop()
-
-
-
+def getdata(enter):
+    params['mid']=enter
+    params['pn']=1
+    response_1=requests.get(url=link,params=params,headers=headers)
+    data=response_1.json()['data']['list']['vlist']
+    #pprint.pprint(data)
+    video={}
+    allvideo=[]
+    count=response_1.json()['data']['page']['count']
+    count_=count
+    
+    for n in range(1,1000):
+        if count<30:
+            for i in range(0,count):
+                video['num']=30*(n-1)+i+1
+                video['bvid']=data[i]['bvid']
+                video['play']=data[i]['play']
+                video['length']=data[i]['length']
+                video['comment']=data[i]['comment']
+                video['pic']=data[i]['pic']
+                video['title']=data[i]['title']
+                allvideo.append(video)
+                allvideo=copy.deepcopy(allvideo)
+                video.clear()
+            break
+        else:
+            for i in range(0,30):
+                video['num']=30*(n-1)+i+1
+                video['bvid']=data[i]['bvid']
+                video['play']=data[i]['play']
+                video['length']=data[i]['length']
+                video['comment']=data[i]['comment']
+                video['pic']=data[i]['pic']
+                video['title']=data[i]['title']
+                allvideo.append(video)
+                allvideo=copy.deepcopy(allvideo)
+                video.clear()
+            count=count-30
+            #print(count)
+            params['pn']=params['pn']+1
+            response_1=requests.get(url=link,params=params,headers=headers)
+            data=response_1.json()['data']['list']['vlist']
+    
+    return [allvideo,count_]
 
 class Media:
     def __init__ (self,comment,pic,title):
