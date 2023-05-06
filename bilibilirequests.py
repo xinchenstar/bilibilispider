@@ -40,6 +40,7 @@ params={
     'w_rid': '3c81e6c1043493919f573429f7897345',
     'wts': 1683028490,
     }
+#request header
 
 def download(num,href):
     html = requests.get(url=href, headers=headers).content
@@ -49,10 +50,12 @@ def download(num,href):
         os.mkdir(file)
     with open(filename, 'wb') as f:
         f.write(html)
+#Cover Download
 
 def imgdownload(allvideo,count):
     for i in range (0,count):
         download(i,allvideo[i]['pic'])
+
 
 def getdata(enter):
     params['mid']=enter
@@ -98,6 +101,7 @@ def getdata(enter):
             data=response_1.json()['data']['list']['vlist']
     
     return [allvideo,count_]
+#Download video data from JSON
 
 class Media:
     def __init__ (self,comment,pic,title):
@@ -112,3 +116,4 @@ class Video(Media):
         self.paly=play
         self.length=length
     pass
+#Download of videos/columns to be developed

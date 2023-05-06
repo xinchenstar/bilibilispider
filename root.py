@@ -40,7 +40,7 @@ class Page_1:
         self.entry.destroy()
         self.lable1.destroy()
         Page_2(root, allvideo, count)
-
+#Enter the first page of the uid
 
 class Page_2:
     def __init__(self, window, allvideo, count):
@@ -98,7 +98,7 @@ class Page_2:
         tree.pack(fill=BOTH, expand=True)
 
         return fr1
-
+#Display the second page of crawling data
 
 root = Tk()
 p1 = Page_1(root)
