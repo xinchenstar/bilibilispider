@@ -42,20 +42,13 @@ params={
     }
 
 def download(num,href):
-    # 二级页面请求 下载图片
     html = requests.get(url=href, headers=headers).content
-    # 创建一个保存图片的路径
     file = 'E:\Spider\img\\'
-    # 完整保存图片的链接
     filename = file + str(num) + '.jpg'
-    # 判断有没有这个保存图片的路径  没有则创建
     if not os.path.exists(file):
         os.mkdir(file)
-    # 进行图片保存
     with open(filename, 'wb') as f:
         f.write(html)
-        # 打印一下图片的信息
-        #print(filename)
 
 def imgdownload(allvideo,count):
     for i in range (0,count):
